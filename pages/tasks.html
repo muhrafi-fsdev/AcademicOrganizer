@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Academic Organizer</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><span class="logo-icon">AO</span> Academic Org</h3>
+                <p>Halo, Student!</p>
+                <small>Teknik Informatika</small>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="experiments.html">
+                        <i class="fas fa-flask"></i>
+                        Experiment Log
+                    </a>
+                </li>
+                <li>
+                    <a href="tasks.html" class="active">
+                        <i class="fas fa-tasks"></i>
+                        Task Manager
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+            </ul>
+            
+            <a href="../index.html" class="logout-btn">
+                <i class="fas fa-arrow-left"></i> Kembali ke Home
+            </a>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1>Task Manager</h1>
+                <p>Kelola tugas kuliah Anda dengan efisien</p>
+            </div>
+
+            <!-- Filter & Stats -->
+            <div class="quick-stats" style="margin-bottom: 1.5rem;">
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>16</h5>
+                        <span>Total Tugas</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>2</h5>
+                        <span>Belum Selesai</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>2</h5>
+                        <span>Sedang Dikerjakan</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>12</h5>
+                        <span>Selesai</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2><i class="fas fa-tasks"></i> Daftar Tugas</h2>
+                    <button class="btn-add" onclick="alert('Demo mode - fitur ini tidak tersedia di GitHub Pages')">
+                        <i class="fas fa-plus"></i> Tambah Tugas
+                    </button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Judul Tugas</th>
+                            <th>Mata Kuliah</th>
+                            <th>Deadline</th>
+                            <th>Prioritas</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Laporan Praktikum Fisika</td>
+                            <td>Fisika Dasar</td>
+                            <td>25 Januari 2025</td>
+                            <td><span class="badge priority-high">Tinggi</span></td>
+                            <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tugas Pemrograman Web</td>
+                            <td>Web Development</td>
+                            <td>28 Januari 2025</td>
+                            <td><span class="badge priority-high">Tinggi</span></td>
+                            <td><span class="status-badge status-belum">Belum Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Essay Bahasa Inggris</td>
+                            <td>English</td>
+                            <td>22 Januari 2025</td>
+                            <td><span class="badge priority-medium">Sedang</span></td>
+                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Presentasi Algoritma</td>
+                            <td>Struktur Data</td>
+                            <td>30 Januari 2025</td>
+                            <td><span class="badge priority-high">Tinggi</span></td>
+                            <td><span class="status-badge status-belum">Belum Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Quiz Matematika Diskrit</td>
+                            <td>Matematika</td>
+                            <td>20 Januari 2025</td>
+                            <td><span class="badge priority-low">Rendah</span></td>
+                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Project Database</td>
+                            <td>Basis Data</td>
+                            <td>5 Februari 2025</td>
+                            <td><span class="badge priority-medium">Sedang</span></td>
+                            <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Makalah Kewarganegaraan</td>
+                            <td>PKN</td>
+                            <td>15 Januari 2025</td>
+                            <td><span class="badge priority-low">Rendah</span></td>
+                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>UTS Jaringan Komputer</td>
+                            <td>Jaringan Komputer</td>
+                            <td>10 Januari 2025</td>
+                            <td><span class="badge priority-high">Tinggi</span></td>
+                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Info Box -->
+            <div class="alert alert-info" style="margin-top: 1.5rem;">
+                <i class="fas fa-info-circle"></i>
+                <span>Ini adalah versi demo. Untuk fitur lengkap dengan database, gunakan versi hosting PHP.</span>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Academic Organizer</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 1.5rem;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 0.375rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+        }
+
+        .stat-trend.up {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .stat-trend.down {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quick-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .quick-stat-text h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .quick-stat-text span {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Live Time */
+        .live-time {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            padding: 0.625rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .live-time i {
+            color: var(--accent-primary);
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title i {
+            color: var(--accent-primary);
+        }
+
+        .chart-body {
+            padding: 1.5rem;
+            height: 280px;
+        }
+
+        /* Progress Ring */
+        .progress-ring-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 4;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: var(--accent-primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 126;
+            stroke-dashoffset: 126;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><span class="logo-icon">AO</span> Academic Org</h3>
+                <p>Halo, Student!</p>
+                <small>Teknik Informatika</small>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="dashboard.html" class="active">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="experiments.html">
+                        <i class="fas fa-flask"></i>
+                        Experiment Log
+                    </a>
+                </li>
+                <li>
+                    <a href="tasks.html">
+                        <i class="fas fa-tasks"></i>
+                        Task Manager
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+            </ul>
+            
+            <a href="../index.html" class="logout-btn">
+                <i class="fas fa-arrow-left"></i> Kembali ke Home
+            </a>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h1>Selamat Datang, <span style="color: var(--accent-primary);">Student</span>!</h1>
+                        <p>Kelola eksperimen dan tugas akademik Anda dengan lebih efisien</p>
+                    </div>
+                    <div class="live-time">
+                        <i class="fas fa-clock"></i>
+                        <span id="liveTime"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Bar -->
+            <div class="quick-stats">
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>75%</h5>
+                        <span>Completion Rate</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>12</h5>
+                        <span>Selesai Minggu Ini</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>4</h5>
+                        <span>Pending Tasks</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>Level 5</h5>
+                        <span>Productivity Rank</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Main Content -->
+                <div class="dashboard-main">
+                    <!-- Statistics Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Total Eksperimen</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-value">16</div>
+                            <div class="stat-label">Total Tugas</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Tugas Pending</div>
+                            <div class="stat-trend down">
+                                <i class="fas fa-arrow-down"></i> 5% dari minggu lalu
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Selesai</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 15% dari minggu lalu
+                            </div>
+                            <!-- Progress Ring -->
+                            <div class="progress-ring-container">
+                                <svg class="progress-ring" width="50" height="50">
+                                    <circle class="progress-ring-bg" cx="25" cy="25" r="20"/>
+                                    <circle class="progress-ring-fill" cx="25" cy="25" r="20" id="progressRing"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-line"></i>
+                                Produktivitas Mingguan
+                            </div>
+                            <select class="form-control" style="width: auto; padding: 0.375rem 0.75rem; font-size: 0.8125rem;">
+                                <option>7 Hari Terakhir</option>
+                                <option>30 Hari Terakhir</option>
+                                <option>3 Bulan Terakhir</option>
+                            </select>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="productivityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Tasks -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h2><i class="fas fa-clipboard-list"></i> Tugas Terbaru</h2>
+                            <a href="tasks.html" class="btn-add">Lihat Semua</a>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Judul Tugas</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Deadline</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Laporan Praktikum Fisika</td>
+                                    <td>Fisika Dasar</td>
+                                    <td>25 Januari 2025</td>
+                                    <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Tugas Pemrograman Web</td>
+                                    <td>Web Development</td>
+                                    <td>28 Januari 2025</td>
+                                    <td><span class="status-badge status-belum">Belum Selesai</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Essay Bahasa Inggris</td>
+                                    <td>English</td>
+                                    <td>22 Januari 2025</td>
+                                    <td><span class="status-badge status-selesai">Selesai</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Presentasi Algoritma</td>
+                                    <td>Struktur Data</td>
+                                    <td>30 Januari 2025</td>
+                                    <td><span class="status-badge status-belum">Belum Selesai</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Quiz Matematika Diskrit</td>
+                                    <td>Matematika</td>
+                                    <td>20 Januari 2025</td>
+                                    <td><span class="status-badge status-selesai">Selesai</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Recent Experiments -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h2><i class="fas fa-flask"></i> Eksperimen Terbaru</h2>
+                            <a href="experiments.html" class="btn-add">Lihat Semua</a>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Judul Eksperimen</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Pengukuran Tegangan Listrik</td>
+                                    <td>Fisika Dasar</td>
+                                    <td>18 Januari 2025</td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Analisis Rangkaian RC</td>
+                                    <td>Elektronika</td>
+                                    <td>15 Januari 2025</td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Percobaan Optika Geometri</td>
+                                    <td>Fisika Dasar</td>
+                                    <td>12 Januari 2025</td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- AI Assistant Panel -->
+                <div class="ai-panel">
+                    <div class="ai-header">
+                        <div class="ai-avatar-header">AI</div>
+                        <div class="ai-header-text">
+                            <h4>Academic AI Assistant</h4>
+                            <span>Online & Siap Membantu</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-messages" id="aiMessages">
+                        <!-- Messages will be inserted here -->
+                    </div>
+                    
+                    <div class="ai-quick-actions">
+                        <button class="quick-btn" onclick="aiQuickAction('tips')">Tips Belajar</button>
+                        <button class="quick-btn" onclick="aiQuickAction('deadline')">Cek Deadline</button>
+                        <button class="quick-btn" onclick="aiQuickAction('motivasi')">Motivasi</button>
+                        <button class="quick-btn" onclick="aiQuickAction('progress')">Progress</button>
+                    </div>
+                    
+                    <div class="ai-input-area">
+                        <input type="text" class="ai-input" id="aiInput" placeholder="Tanya apa saja..." onkeypress="if(event.key==='Enter')sendAiMessage()">
+                        <button class="ai-send-btn" onclick="sendAiMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    // Live Time
+    function updateTime() {
+        const el = document.getElementById('liveTime');
+        if (el) {
+            el.textContent = new Date().toLocaleString('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Progress Ring Animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressRing = document.getElementById('progressRing');
+        if (progressRing) {
+            const completion = 75;
+            const circumference = 2 * Math.PI * 20;
+            const offset = circumference - (completion / 100) * circumference;
+            setTimeout(() => {
+                progressRing.style.strokeDashoffset = offset;
+            }, 500);
+        }
+    });
+
+    // Productivity Chart
+    const ctx = document.getElementById('productivityChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                datasets: [{
+                    label: 'Produktivitas',
+                    data: [65, 72, 80, 75, 85, 90, 88],
+                    borderColor: '#c8ff00',
+                    backgroundColor: 'rgba(200, 255, 0, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#c8ff00',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#71717a' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#71717a' }
+                    }
+                }
+            }
+        });
+    }
+
+    // AI Assistant
+    const aiMessages = document.getElementById('aiMessages');
+    const aiResponses = {
+        tips: [
+            "**Tips Belajar Efektif:**\n\n• Gunakan teknik Pomodoro (25 menit fokus, 5 menit istirahat)\n• Buat catatan dengan metode Cornell\n• Review materi sebelum tidur\n• Jangan multitasking saat belajar",
+            "**Strategi Mengerjakan Tugas:**\n\n• Pecah tugas besar menjadi bagian kecil\n• Mulai dari yang paling sulit saat energi masih penuh\n• Set deadline pribadi 2 hari sebelum deadline asli\n• Reward diri sendiri setelah menyelesaikan tugas"
+        ],
+        deadline: [
+            "**Status Deadline Anda:**\n\n• Tugas pending: 4 tugas\n• Tugas selesai minggu ini: 12\n• Completion rate: 75%\n\nTetap semangat! Anda hampir mencapai target mingguan.",
+        ],
+        motivasi: [
+            "**Motivasi Hari Ini:**\n\n\"Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.\"\n\n— Colin Powell\n\nAnda sudah menyelesaikan 12 tugas. Luar biasa!",
+            "**Quote of the Day:**\n\n\"Pendidikan adalah senjata paling ampuh untuk mengubah dunia.\"\n\n— Nelson Mandela\n\nTerus tingkatkan produktivitas Anda!"
+        ],
+        progress: [
+            "**Progress Report Anda:**\n\n• Total Eksperimen: 8\n• Total Tugas: 16\n• Completion Rate: 75%\n• Level Produktivitas: Level 5\n\nTrending: Produktivitas Anda meningkat 12% bulan ini!"
+        ],
+        greeting: [
+            "Halo! Saya Academic AI Assistant. Saya siap membantu Anda dengan:\n\n• Tips belajar efektif\n• Manajemen waktu\n• Motivasi & semangat\n• Analisis progress\n\nAda yang bisa saya bantu hari ini?"
+        ]
+    };
+
+    // Welcome message
+    setTimeout(() => {
+        addAiMessage('ai', 'Selamat Datang!', aiResponses.greeting[0]);
+    }, 500);
+
+    function addAiMessage(type, title, content) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'ai-message';
+        
+        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        
+        if (type === 'user') {
+            msgDiv.innerHTML = `
+                <div class="ai-content user">
+                    <div class="ai-text">${escapeHtml(content)}</div>
+                    <div class="ai-timestamp">${time}</div>
+                </div>
+                <div class="ai-avatar">U</div>
+            `;
+        } else {
+            msgDiv.innerHTML = `
+                <div class="ai-avatar">AI</div>
+                <div class="ai-content">
+                    <div class="ai-title">${title}</div>
+                    <div class="ai-text">${formatAiContent(content)}</div>
+                    <div class="ai-timestamp">${time}</div>
+                </div>
+            `;
+        }
+        
+        aiMessages.appendChild(msgDiv);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    }
+
+    function formatAiContent(content) {
+        return content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>')
+            .replace(/• /g, '&bull; ');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'aiTyping';
+        typingDiv.className = 'ai-message';
+        typingDiv.innerHTML = `
+            <div class="ai-avatar">AI</div>
+            <div class="ai-content">
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        `;
+        aiMessages.appendChild(typingDiv);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+        const typing = document.getElementById('aiTyping');
+        if (typing) typing.remove();
+    }
+
+    function aiQuickAction(action) {
+        showTyping();
+        setTimeout(() => {
+            hideTyping();
+            const responses = aiResponses[action] || aiResponses.greeting;
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            const titles = {
+                tips: 'Tips Belajar',
+                deadline: 'Status Deadline',
+                motivasi: 'Motivasi',
+                progress: 'Progress Report'
+            };
+            addAiMessage('ai', titles[action] || 'AI Response', response);
+        }, 800 + Math.random() * 500);
+    }
+
+    function sendAiMessage() {
+        const input = document.getElementById('aiInput');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        addAiMessage('user', '', text);
+        input.value = '';
+        
+        showTyping();
+        
+        setTimeout(() => {
+            hideTyping();
+            
+            const lowerText = text.toLowerCase();
+            let response = '';
+            let title = 'Response';
+            
+            if (lowerText.includes('tips') || lowerText.includes('belajar')) {
+                response = aiResponses.tips[Math.floor(Math.random() * aiResponses.tips.length)];
+                title = 'Tips Belajar';
+            } else if (lowerText.includes('deadline') || lowerText.includes('tugas')) {
+                response = aiResponses.deadline[0];
+                title = 'Status Deadline';
+            } else if (lowerText.includes('motivasi') || lowerText.includes('semangat')) {
+                response = aiResponses.motivasi[Math.floor(Math.random() * aiResponses.motivasi.length)];
+                title = 'Motivasi';
+            } else if (lowerText.includes('progress') || lowerText.includes('statistik')) {
+                response = aiResponses.progress[0];
+                title = 'Progress';
+            } else if (lowerText.includes('halo') || lowerText.includes('hai') || lowerText.includes('hello')) {
+                response = "Halo juga! Ada yang bisa saya bantu hari ini? Anda bisa tanya tentang tips belajar, cek deadline, atau minta motivasi!";
+                title = 'Halo!';
+            } else if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
+                response = "Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi ya!";
+                title = 'Response';
+            } else {
+                response = "Saya mengerti! Sebagai Academic AI Assistant, saya bisa membantu Anda dengan:\n\n• Tips belajar efektif\n• Cek status deadline\n• Motivasi harian\n• Analisis progress\n\nSilakan gunakan tombol aksi cepat atau tanyakan hal spesifik!";
+                title = 'AI Assistant';
+            }
+            
+            addAiMessage('ai', title, response);
+        }, 1000 + Math.random() * 500);
+    }
+    </script>
+</body>
+</html>

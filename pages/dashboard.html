@@ -8,6 +8,181 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* Sidebar Logo Image */
+        .sidebar-logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .sidebar-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        /* Notification Styles */
+        .notification-link {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            background: #ef4444;
+            color: white;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0.75rem;
+            right: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notif-header span {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .notif-clear {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .notif-clear:hover {
+            text-decoration: underline;
+        }
+
+        .notif-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .notif-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .notif-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notif-item.urgent .notif-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .notif-item.warning .notif-icon {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .notif-item.info .notif-icon {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .notif-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-title {
+            font-weight: 600;
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+            margin-bottom: 0.125rem;
+        }
+
+        .notif-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .notif-time {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            margin-top: 0.25rem;
+        }
+
+        .notif-item.urgent .notif-time {
+            color: #ef4444;
+        }
+
+        .notif-item.warning .notif-time {
+            color: #eab308;
+        }
+
+        .notif-empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .notif-empty i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
         /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
@@ -243,7 +418,10 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h3><span class="logo-icon">AO</span> Academic Org</h3>
+                <h3>
+                    <img src="../assets/images/logo.png" alt="Logo" class="sidebar-logo-img">
+                    <span>Academic<span style="color: #f97316;">Org</span></span>
+                </h3>
                 <p>Halo, Student!</p>
                 <small>Teknik Informatika</small>
             </div>
@@ -272,6 +450,54 @@
                         <i class="fas fa-chart-line"></i>
                         Analytics
                     </a>
+                </li>
+                <li>
+                    <a href="#" onclick="toggleNotifications(); return false;" class="notification-link">
+                        <i class="fas fa-bell"></i>
+                        Notifikasi
+                        <span class="notification-badge" id="notifBadge">4</span>
+                    </a>
+                    <!-- Notification Dropdown -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notif-header">
+                            <span>Pengingat Tugas</span>
+                            <button onclick="clearNotifications()" class="notif-clear">Hapus Semua</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <div class="notif-item urgent">
+                                <div class="notif-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="notif-content">
+                                    <div class="notif-title">Tugas Pemrograman Web</div>
+                                    <div class="notif-desc">Deadline: 28 Januari 2025</div>
+                                    <div class="notif-time">Belum selesai - 3 hari lagi</div>
+                                </div>
+                            </div>
+                            <div class="notif-item urgent">
+                                <div class="notif-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="notif-content">
+                                    <div class="notif-title">Presentasi Algoritma</div>
+                                    <div class="notif-desc">Deadline: 30 Januari 2025</div>
+                                    <div class="notif-time">Belum selesai - 5 hari lagi</div>
+                                </div>
+                            </div>
+                            <div class="notif-item warning">
+                                <div class="notif-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notif-content">
+                                    <div class="notif-title">Laporan Praktikum Fisika</div>
+                                    <div class="notif-desc">Deadline: 25 Januari 2025</div>
+                                    <div class="notif-time">Sedang dikerjakan - Segera selesaikan!</div>
+                                </div>
+                            </div>
+                            <div class="notif-item warning">
+                                <div class="notif-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notif-content">
+                                    <div class="notif-title">Project Database</div>
+                                    <div class="notif-desc">Deadline: 5 Februari 2025</div>
+                                    <div class="notif-time">Sedang dikerjakan - 11 hari lagi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </li>
             </ul>
             
@@ -760,6 +986,35 @@
             addAiMessage('ai', title, response);
         }, 1000 + Math.random() * 500);
     }
+
+    // Notification Functions
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    function clearNotifications() {
+        const notifList = document.getElementById('notifList');
+        const badge = document.getElementById('notifBadge');
+        
+        notifList.innerHTML = `
+            <div class="notif-empty">
+                <i class="fas fa-check-circle"></i>
+                Tidak ada pengingat tugas
+            </div>
+        `;
+        badge.style.display = 'none';
+    }
+
+    // Close notification dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('notificationDropdown');
+        const link = document.querySelector('.notification-link');
+        
+        if (dropdown && !dropdown.contains(e.target) && !link.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
     </script>
 </body>
 </html>

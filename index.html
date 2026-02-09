@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Organizer - Kelola Tugas & Eksperimen</title>
+    <meta name="description"
+        content="Academic Organizer membantu mahasiswa mengelola tugas kuliah, mencatat hasil eksperimen praktikum, dan melacak progress akademik dengan lebih efisien.">
+    <meta name="keywords"
+        content="academic organizer, task manager, experiment log, mahasiswa, tugas kuliah, praktikum">
+    <meta name="author" content="Riyoo">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Academic Organizer - Kelola Tugas & Eksperimen">
+    <meta property="og:description"
+        content="Academic Organizer membantu mahasiswa mengelola tugas kuliah, mencatat hasil eksperimen praktikum, dan melacak progress akademik.">
+    <meta property="og:image" content="assets/images/logo.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
+
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -417,6 +435,7 @@
         }
     </style>
 </head>
+
 <body class="landing-page">
     <!-- Navbar -->
     <nav class="navbar">
@@ -455,7 +474,8 @@
             </h1>
 
             <p class="hero-description">
-                Academic Organizer membantu mahasiswa mengelola tugas kuliah, mencatat hasil eksperimen praktikum, dan melacak progress akademik dengan lebih efisien dan terorganisir.
+                Academic Organizer membantu mahasiswa mengelola tugas kuliah, mencatat hasil eksperimen praktikum, dan
+                melacak progress akademik dengan lebih efisien dan terorganisir.
             </p>
 
             <div class="hero-cta">
@@ -583,7 +603,8 @@
     <!-- Footer -->
     <footer class="footer">
         <p class="footer-text">
-            &copy; 2025 Academic Organizer. Made with <i class="fas fa-heart" style="color: var(--danger);"></i> by <a href="#">Riyoo</a>
+            &copy; 2025 Academic Organizer. Made with <i class="fas fa-heart" style="color: var(--danger);"></i> by <a
+                href="#">Riyoo</a>
         </p>
     </footer>
 
@@ -611,6 +632,43 @@
                 navbar.style.background = 'rgba(15, 15, 15, 0.9)';
             }
         });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navbarMenu = document.querySelector('.navbar-menu');
+        const navbarCta = document.querySelector('.navbar-cta');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', function () {
+                // Toggle menu visibility
+                if (navbarMenu.style.display === 'flex') {
+                    navbarMenu.style.display = 'none';
+                    navbarCta.style.display = 'none';
+                } else {
+                    navbarMenu.style.display = 'flex';
+                    navbarMenu.style.flexDirection = 'column';
+                    navbarMenu.style.position = 'absolute';
+                    navbarMenu.style.top = '100%';
+                    navbarMenu.style.left = '0';
+                    navbarMenu.style.right = '0';
+                    navbarMenu.style.background = 'rgba(15, 15, 15, 0.98)';
+                    navbarMenu.style.padding = '1rem';
+                    navbarMenu.style.gap = '1rem';
+                    navbarMenu.style.borderTop = '1px solid var(--border-color)';
+
+                    navbarCta.style.display = 'flex';
+                    navbarCta.style.flexDirection = 'column';
+                    navbarCta.style.position = 'absolute';
+                    navbarCta.style.top = 'calc(100% + 150px)';
+                    navbarCta.style.left = '0';
+                    navbarCta.style.right = '0';
+                    navbarCta.style.background = 'rgba(15, 15, 15, 0.98)';
+                    navbarCta.style.padding = '1rem';
+                    navbarCta.style.gap = '0.75rem';
+                }
+            });
+        }
     </script>
 </body>
+
 </html>

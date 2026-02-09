@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Academic Organizer</title>
+    <meta name="description" content="Dashboard Academic Organizer - Kelola tugas dan eksperimen akademik Anda">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo.png">
+
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="../assets/js/app.js"></script>
     <style>
         /* Sidebar Logo Image */
         .sidebar-logo-img {
@@ -20,167 +28,6 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 1.125rem;
-        }
-
-        /* Notification Styles */
-        .notification-link {
-            position: relative;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            background: #ef4444;
-            color: white;
-            font-size: 0.6875rem;
-            font-weight: 700;
-            padding: 0.125rem 0.5rem;
-            border-radius: 9999px;
-            min-width: 1.25rem;
-            text-align: center;
-        }
-
-        .notification-dropdown {
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            left: 0.75rem;
-            right: 0.75rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 1000;
-            max-height: 400px;
-            overflow: hidden;
-        }
-
-        .notification-dropdown.show {
-            display: block;
-            animation: slideDown 0.2s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .notif-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .notif-header span {
-            font-weight: 700;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-        }
-
-        .notif-clear {
-            background: none;
-            border: none;
-            color: var(--accent-primary);
-            font-size: 0.75rem;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .notif-clear:hover {
-            text-decoration: underline;
-        }
-
-        .notif-list {
-            max-height: 320px;
-            overflow-y: auto;
-        }
-
-        .notif-item {
-            display: flex;
-            gap: 0.75rem;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.2s;
-        }
-
-        .notif-item:last-child {
-            border-bottom: none;
-        }
-
-        .notif-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .notif-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .notif-item.urgent .notif-icon {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .notif-item.warning .notif-icon {
-            background: rgba(234, 179, 8, 0.2);
-            color: #eab308;
-        }
-
-        .notif-item.info .notif-icon {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .notif-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .notif-title {
-            font-weight: 600;
-            font-size: 0.8125rem;
-            color: var(--text-primary);
-            margin-bottom: 0.125rem;
-        }
-
-        .notif-desc {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .notif-time {
-            font-size: 0.6875rem;
-            color: var(--text-tertiary);
-            margin-top: 0.25rem;
-        }
-
-        .notif-item.urgent .notif-time {
-            color: #ef4444;
-        }
-
-        .notif-item.warning .notif-time {
-            color: #eab308;
-        }
-
-        .notif-empty {
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-tertiary);
-        }
-
-        .notif-empty i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            display: block;
         }
 
         /* Dashboard Grid Layout */
@@ -201,162 +48,6 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--border-light);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            color: var(--accent-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            line-height: 1;
-            margin-bottom: 0.375rem;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        .stat-trend {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-full);
-        }
-
-        .stat-trend.up {
-            background: rgba(34, 197, 94, 0.1);
-            color: var(--success);
-        }
-
-        .stat-trend.down {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        /* Quick Stats */
-        .quick-stats {
-            display: flex;
-            gap: 1.5rem;
-            padding: 1.25rem 1.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .quick-stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .quick-stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-tertiary);
-            color: var(--accent-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .quick-stat-text h5 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .quick-stat-text span {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-        }
-
-        /* Live Time */
-        .live-time {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            padding: 0.625rem 1rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-        }
-
-        .live-time i {
-            color: var(--accent-primary);
-        }
-
-        /* Chart Card */
-        .chart-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .chart-title i {
-            color: var(--accent-primary);
-        }
-
-        .chart-body {
-            padding: 1.5rem;
-            height: 280px;
         }
 
         /* Progress Ring */
@@ -413,6 +104,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -420,12 +112,12 @@
             <div class="sidebar-header">
                 <h3>
                     <img src="../assets/images/logo.png" alt="Logo" class="sidebar-logo-img">
-                    <span>Academic<span style="color: #f97316;">Org</span></span>
+                    <span class="text-gradient">AcademicOrg</span>
                 </h3>
                 <p>Halo, Student!</p>
                 <small>Teknik Informatika</small>
             </div>
-            
+
             <ul class="sidebar-menu">
                 <li>
                     <a href="dashboard.html" class="active">
@@ -451,68 +143,21 @@
                         Analytics
                     </a>
                 </li>
-                <li>
-                    <a href="#" onclick="toggleNotifications(); return false;" class="notification-link">
-                        <i class="fas fa-bell"></i>
-                        Notifikasi
-                        <span class="notification-badge" id="notifBadge">4</span>
-                    </a>
-                    <!-- Notification Dropdown -->
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="notif-header">
-                            <span>Pengingat Tugas</span>
-                            <button onclick="clearNotifications()" class="notif-clear">Hapus Semua</button>
-                        </div>
-                        <div class="notif-list" id="notifList">
-                            <div class="notif-item urgent">
-                                <div class="notif-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                <div class="notif-content">
-                                    <div class="notif-title">Tugas Pemrograman Web</div>
-                                    <div class="notif-desc">Deadline: 28 Januari 2025</div>
-                                    <div class="notif-time">Belum selesai - 3 hari lagi</div>
-                                </div>
-                            </div>
-                            <div class="notif-item urgent">
-                                <div class="notif-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                <div class="notif-content">
-                                    <div class="notif-title">Presentasi Algoritma</div>
-                                    <div class="notif-desc">Deadline: 30 Januari 2025</div>
-                                    <div class="notif-time">Belum selesai - 5 hari lagi</div>
-                                </div>
-                            </div>
-                            <div class="notif-item warning">
-                                <div class="notif-icon"><i class="fas fa-clock"></i></div>
-                                <div class="notif-content">
-                                    <div class="notif-title">Laporan Praktikum Fisika</div>
-                                    <div class="notif-desc">Deadline: 25 Januari 2025</div>
-                                    <div class="notif-time">Sedang dikerjakan - Segera selesaikan!</div>
-                                </div>
-                            </div>
-                            <div class="notif-item warning">
-                                <div class="notif-icon"><i class="fas fa-clock"></i></div>
-                                <div class="notif-content">
-                                    <div class="notif-title">Project Database</div>
-                                    <div class="notif-desc">Deadline: 5 Februari 2025</div>
-                                    <div class="notif-time">Sedang dikerjakan - 11 hari lagi</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
             </ul>
-            
+
             <a href="../index.html" class="logout-btn">
                 <i class="fas fa-arrow-left"></i> Kembali ke Home
             </a>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="main-content">
             <!-- Content Header -->
             <div class="content-header">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h1>Selamat Datang, <span style="color: var(--accent-primary);">Student</span>!</h1>
+                        <h1>Selamat Datang, Student!</h1>
                         <p>Kelola eksperimen dan tugas akademik Anda dengan lebih efisien</p>
                     </div>
                     <div class="live-time">
@@ -529,36 +174,44 @@
                         <i class="fas fa-fire"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>75%</h5>
+                        <h5 id="completionRate">0%</h5>
                         <span>Completion Rate</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                    <div class="quick-stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>12</h5>
-                        <span>Selesai Minggu Ini</span>
+                        <h5 id="completedCount">0</h5>
+                        <span>Selesai</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+                    <div class="quick-stat-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
                         <i class="fas fa-hourglass-half"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>4</h5>
+                        <h5 id="pendingCount">0</h5>
                         <span>Pending Tasks</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                    <div class="quick-stat-icon" style="background: rgba(124, 58, 237, 0.2); color: #7c3aed;">
                         <i class="fas fa-trophy"></i>
                     </div>
                     <div class="quick-stat-text">
                         <h5>Level 5</h5>
                         <span>Productivity Rank</span>
                     </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Deadlines Section -->
+            <div class="deadline-section">
+                <h3><i class="fas fa-clock"></i> Deadline Mendatang</h3>
+                <div class="deadline-cards" id="deadlineCards">
+                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
 
@@ -572,40 +225,40 @@
                             <div class="stat-icon">
                                 <i class="fas fa-flask"></i>
                             </div>
-                            <div class="stat-value">8</div>
+                            <div class="stat-value" id="totalExperiments">0</div>
                             <div class="stat-label">Total Eksperimen</div>
                             <div class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
                             </div>
                         </div>
-                        
+
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fas fa-tasks"></i>
                             </div>
-                            <div class="stat-value">16</div>
+                            <div class="stat-value" id="totalTasks">0</div>
                             <div class="stat-label">Total Tugas</div>
                             <div class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
                             </div>
                         </div>
-                        
+
                         <div class="stat-card">
                             <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
+                                <i class="fas fa-spinner"></i>
                             </div>
-                            <div class="stat-value">4</div>
-                            <div class="stat-label">Tugas Pending</div>
+                            <div class="stat-value" id="inProgressTasks">0</div>
+                            <div class="stat-label">Sedang Dikerjakan</div>
                             <div class="stat-trend down">
                                 <i class="fas fa-arrow-down"></i> 5% dari minggu lalu
                             </div>
                         </div>
-                        
+
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fas fa-check-double"></i>
                             </div>
-                            <div class="stat-value">12</div>
+                            <div class="stat-value" id="completedTasks">0</div>
                             <div class="stat-label">Selesai</div>
                             <div class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 15% dari minggu lalu
@@ -613,8 +266,15 @@
                             <!-- Progress Ring -->
                             <div class="progress-ring-container">
                                 <svg class="progress-ring" width="50" height="50">
-                                    <circle class="progress-ring-bg" cx="25" cy="25" r="20"/>
-                                    <circle class="progress-ring-fill" cx="25" cy="25" r="20" id="progressRing"/>
+                                    <defs>
+                                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#00d4ff" />
+                                            <stop offset="100%" style="stop-color:#7c3aed" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="progress-ring-bg" cx="25" cy="25" r="20" />
+                                    <circle class="progress-ring-fill" cx="25" cy="25" r="20" id="progressRing"
+                                        style="stroke: url(#progressGradient)" />
                                 </svg>
                             </div>
                         </div>
@@ -627,7 +287,8 @@
                                 <i class="fas fa-chart-line"></i>
                                 Produktivitas Mingguan
                             </div>
-                            <select class="form-control" style="width: auto; padding: 0.375rem 0.75rem; font-size: 0.8125rem;">
+                            <select class="form-control"
+                                style="width: auto; padding: 0.375rem 0.75rem; font-size: 0.8125rem;">
                                 <option>7 Hari Terakhir</option>
                                 <option>30 Hari Terakhir</option>
                                 <option>3 Bulan Terakhir</option>
@@ -644,7 +305,7 @@
                             <h2><i class="fas fa-clipboard-list"></i> Tugas Terbaru</h2>
                             <a href="tasks.html" class="btn-add">Lihat Semua</a>
                         </div>
-                        
+
                         <table>
                             <thead>
                                 <tr>
@@ -654,37 +315,8 @@
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Laporan Praktikum Fisika</td>
-                                    <td>Fisika Dasar</td>
-                                    <td>25 Januari 2025</td>
-                                    <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Tugas Pemrograman Web</td>
-                                    <td>Web Development</td>
-                                    <td>28 Januari 2025</td>
-                                    <td><span class="status-badge status-belum">Belum Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Essay Bahasa Inggris</td>
-                                    <td>English</td>
-                                    <td>22 Januari 2025</td>
-                                    <td><span class="status-badge status-selesai">Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Presentasi Algoritma</td>
-                                    <td>Struktur Data</td>
-                                    <td>30 Januari 2025</td>
-                                    <td><span class="status-badge status-belum">Belum Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Quiz Matematika Diskrit</td>
-                                    <td>Matematika</td>
-                                    <td>20 Januari 2025</td>
-                                    <td><span class="status-badge status-selesai">Selesai</span></td>
-                                </tr>
+                            <tbody id="recentTasksTable">
+                                <!-- Will be populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -695,35 +327,18 @@
                             <h2><i class="fas fa-flask"></i> Eksperimen Terbaru</h2>
                             <a href="experiments.html" class="btn-add">Lihat Semua</a>
                         </div>
-                        
+
                         <table>
                             <thead>
                                 <tr>
                                     <th>Judul Eksperimen</th>
                                     <th>Mata Kuliah</th>
                                     <th>Tanggal</th>
-                                    <th>Aksi</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Pengukuran Tegangan Listrik</td>
-                                    <td>Fisika Dasar</td>
-                                    <td>18 Januari 2025</td>
-                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Analisis Rangkaian RC</td>
-                                    <td>Elektronika</td>
-                                    <td>15 Januari 2025</td>
-                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Percobaan Optika Geometri</td>
-                                    <td>Fisika Dasar</td>
-                                    <td>12 Januari 2025</td>
-                                    <td><a href="#" class="btn btn-sm btn-primary">Lihat</a></td>
-                                </tr>
+                            <tbody id="recentExperimentsTable">
+                                <!-- Will be populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -738,20 +353,21 @@
                             <span>Online & Siap Membantu</span>
                         </div>
                     </div>
-                    
+
                     <div class="ai-messages" id="aiMessages">
                         <!-- Messages will be inserted here -->
                     </div>
-                    
+
                     <div class="ai-quick-actions">
                         <button class="quick-btn" onclick="aiQuickAction('tips')">Tips Belajar</button>
                         <button class="quick-btn" onclick="aiQuickAction('deadline')">Cek Deadline</button>
                         <button class="quick-btn" onclick="aiQuickAction('motivasi')">Motivasi</button>
                         <button class="quick-btn" onclick="aiQuickAction('progress')">Progress</button>
                     </div>
-                    
+
                     <div class="ai-input-area">
-                        <input type="text" class="ai-input" id="aiInput" placeholder="Tanya apa saja..." onkeypress="if(event.key==='Enter')sendAiMessage()">
+                        <input type="text" class="ai-input" id="aiInput" placeholder="Tanya apa saja..."
+                            onkeypress="if(event.key==='Enter')sendAiMessage()">
                         <button class="ai-send-btn" onclick="sendAiMessage()">
                             <i class="fas fa-paper-plane"></i>
                         </button>
@@ -762,124 +378,209 @@
     </div>
 
     <script>
-    // Live Time
-    function updateTime() {
-        const el = document.getElementById('liveTime');
-        if (el) {
-            el.textContent = new Date().toLocaleString('id-ID', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-        }
-    }
-    updateTime();
-    setInterval(updateTime, 1000);
+        // Wait for DOM and AcademicOrganizer to be ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize AcademicOrganizer if not already
+            if (typeof AcademicOrganizer !== 'undefined') {
+                AcademicOrganizer.init();
+                loadDashboardData();
+            }
 
-    // Progress Ring Animation
-    document.addEventListener('DOMContentLoaded', function() {
-        const progressRing = document.getElementById('progressRing');
-        if (progressRing) {
-            const completion = 75;
-            const circumference = 2 * Math.PI * 20;
-            const offset = circumference - (completion / 100) * circumference;
+            // Live Time
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // Initialize Chart
+            initChart();
+
+            // AI Welcome
             setTimeout(() => {
-                progressRing.style.strokeDashoffset = offset;
+                addAiMessage('ai', 'Selamat Datang!', aiResponses.greeting[0]);
             }, 500);
-        }
-    });
+        });
 
-    // Productivity Chart
-    const ctx = document.getElementById('productivityChart');
-    if (ctx) {
-        new Chart(ctx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                datasets: [{
-                    label: 'Produktivitas',
-                    data: [65, 72, 80, 75, 85, 90, 88],
-                    borderColor: '#c8ff00',
-                    backgroundColor: 'rgba(200, 255, 0, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#c8ff00',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#71717a' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#71717a' }
-                    }
+        function updateTime() {
+            const el = document.getElementById('liveTime');
+            if (el) {
+                el.textContent = new Date().toLocaleString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+        }
+
+        function loadDashboardData() {
+            const stats = AcademicOrganizer.getStats();
+            const tasks = AcademicOrganizer.getTasks();
+            const experiments = AcademicOrganizer.getExperiments();
+            const deadlines = AcademicOrganizer.getUpcomingDeadlines();
+
+            // Update stats
+            document.getElementById('completionRate').textContent = stats.completionRate + '%';
+            document.getElementById('completedCount').textContent = stats.completedTasks;
+            document.getElementById('pendingCount').textContent = stats.pendingTasks + stats.inProgressTasks;
+            document.getElementById('totalExperiments').textContent = stats.totalExperiments;
+            document.getElementById('totalTasks').textContent = stats.totalTasks;
+            document.getElementById('inProgressTasks').textContent = stats.inProgressTasks;
+            document.getElementById('completedTasks').textContent = stats.completedTasks;
+
+            // Progress Ring Animation
+            const progressRing = document.getElementById('progressRing');
+            if (progressRing) {
+                const circumference = 2 * Math.PI * 20;
+                const offset = circumference - (stats.completionRate / 100) * circumference;
+                setTimeout(() => {
+                    progressRing.style.strokeDashoffset = offset;
+                }, 500);
+            }
+
+            // Populate deadline cards
+            const deadlineContainer = document.getElementById('deadlineCards');
+            if (deadlineContainer) {
+                if (deadlines.length === 0) {
+                    deadlineContainer.innerHTML = `
+                    <div class="alert alert-success" style="margin: 0;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Tidak ada deadline dalam 7 hari ke depan. Kerja bagus!</span>
+                    </div>
+                `;
+                } else {
+                    deadlineContainer.innerHTML = deadlines.map(task => `
+                    <div class="deadline-card ${task.urgency}">
+                        <div class="deadline-card-header">
+                            <div>
+                                <div class="deadline-card-title">${task.title}</div>
+                                <div class="deadline-card-subject">${task.subject}</div>
+                            </div>
+                            <div class="deadline-countdown">
+                                <div class="deadline-days">${task.daysLeft}</div>
+                                <div class="deadline-label">hari lagi</div>
+                            </div>
+                        </div>
+                        <div class="deadline-date">
+                            <i class="fas fa-calendar"></i>
+                            ${AcademicOrganizer.formatDate(task.deadline)}
+                        </div>
+                    </div>
+                `).join('');
                 }
             }
-        });
-    }
 
-    // AI Assistant
-    const aiMessages = document.getElementById('aiMessages');
-    const aiResponses = {
-        tips: [
-            "**Tips Belajar Efektif:**\n\n• Gunakan teknik Pomodoro (25 menit fokus, 5 menit istirahat)\n• Buat catatan dengan metode Cornell\n• Review materi sebelum tidur\n• Jangan multitasking saat belajar",
-            "**Strategi Mengerjakan Tugas:**\n\n• Pecah tugas besar menjadi bagian kecil\n• Mulai dari yang paling sulit saat energi masih penuh\n• Set deadline pribadi 2 hari sebelum deadline asli\n• Reward diri sendiri setelah menyelesaikan tugas"
-        ],
-        deadline: [
-            "**Status Deadline Anda:**\n\n• Tugas pending: 4 tugas\n• Tugas selesai minggu ini: 12\n• Completion rate: 75%\n\nTetap semangat! Anda hampir mencapai target mingguan.",
-        ],
-        motivasi: [
-            "**Motivasi Hari Ini:**\n\n\"Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.\"\n\n— Colin Powell\n\nAnda sudah menyelesaikan 12 tugas. Luar biasa!",
-            "**Quote of the Day:**\n\n\"Pendidikan adalah senjata paling ampuh untuk mengubah dunia.\"\n\n— Nelson Mandela\n\nTerus tingkatkan produktivitas Anda!"
-        ],
-        progress: [
-            "**Progress Report Anda:**\n\n• Total Eksperimen: 8\n• Total Tugas: 16\n• Completion Rate: 75%\n• Level Produktivitas: Level 5\n\nTrending: Produktivitas Anda meningkat 12% bulan ini!"
-        ],
-        greeting: [
-            "Halo! Saya Academic AI Assistant. Saya siap membantu Anda dengan:\n\n• Tips belajar efektif\n• Manajemen waktu\n• Motivasi & semangat\n• Analisis progress\n\nAda yang bisa saya bantu hari ini?"
-        ]
-    };
+            // Populate recent tasks
+            const tasksTable = document.getElementById('recentTasksTable');
+            if (tasksTable) {
+                tasksTable.innerHTML = tasks.slice(0, 5).map(task => `
+                <tr>
+                    <td>${task.title}</td>
+                    <td>${task.subject}</td>
+                    <td>${AcademicOrganizer.formatDate(task.deadline)}</td>
+                    <td><span class="status-badge ${AcademicOrganizer.getStatusClass(task.status)}">${AcademicOrganizer.getStatusLabel(task.status)}</span></td>
+                </tr>
+            `).join('');
+            }
 
-    // Welcome message
-    setTimeout(() => {
-        addAiMessage('ai', 'Selamat Datang!', aiResponses.greeting[0]);
-    }, 500);
+            // Populate recent experiments
+            const experimentsTable = document.getElementById('recentExperimentsTable');
+            if (experimentsTable) {
+                experimentsTable.innerHTML = experiments.slice(0, 3).map(exp => `
+                <tr>
+                    <td>${exp.title}</td>
+                    <td>${exp.subject}</td>
+                    <td>${AcademicOrganizer.formatDate(exp.date)}</td>
+                    <td><span class="status-badge ${AcademicOrganizer.getStatusClass(exp.status)}">${AcademicOrganizer.getStatusLabel(exp.status)}</span></td>
+                </tr>
+            `).join('');
+            }
+        }
 
-    function addAiMessage(type, title, content) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'ai-message';
-        
-        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-        
-        if (type === 'user') {
-            msgDiv.innerHTML = `
+        function initChart() {
+            const ctx = document.getElementById('productivityChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                        datasets: [{
+                            label: 'Produktivitas',
+                            data: [65, 72, 80, 75, 85, 90, 88],
+                            borderColor: '#00d4ff',
+                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00d4ff',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#6b6b80' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#6b6b80' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // AI Assistant
+        const aiMessages = document.getElementById('aiMessages');
+        const aiResponses = {
+            tips: [
+                "**Tips Belajar Efektif:**\n\n• Gunakan teknik Pomodoro (25 menit fokus, 5 menit istirahat)\n• Buat catatan dengan metode Cornell\n• Review materi sebelum tidur\n• Jangan multitasking saat belajar",
+                "**Strategi Mengerjakan Tugas:**\n\n• Pecah tugas besar menjadi bagian kecil\n• Mulai dari yang paling sulit saat energi masih penuh\n• Set deadline pribadi 2 hari sebelum deadline asli\n• Reward diri sendiri setelah menyelesaikan tugas"
+            ],
+            deadline: [
+                "**Status Deadline Anda:**\n\n• Tugas pending: " + (typeof AcademicOrganizer !== 'undefined' ? AcademicOrganizer.getStats().pendingTasks : 0) + " tugas\n• Completion rate: " + (typeof AcademicOrganizer !== 'undefined' ? AcademicOrganizer.getStats().completionRate : 0) + "%\n\nTetap semangat! Anda hampir mencapai target mingguan.",
+            ],
+            motivasi: [
+                "**Motivasi Hari Ini:**\n\n\"Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.\"\n\n— Colin Powell\n\nAnda sudah menyelesaikan banyak tugas. Luar biasa!",
+                "**Quote of the Day:**\n\n\"Pendidikan adalah senjata paling ampuh untuk mengubah dunia.\"\n\n— Nelson Mandela\n\nTerus tingkatkan produktivitas Anda!"
+            ],
+            progress: [
+                "**Progress Report Anda:**\n\n• Total Eksperimen: " + (typeof AcademicOrganizer !== 'undefined' ? AcademicOrganizer.getStats().totalExperiments : 0) + "\n• Total Tugas: " + (typeof AcademicOrganizer !== 'undefined' ? AcademicOrganizer.getStats().totalTasks : 0) + "\n• Completion Rate: " + (typeof AcademicOrganizer !== 'undefined' ? AcademicOrganizer.getStats().completionRate : 0) + "%\n• Level Produktivitas: Level 5\n\nTrending: Produktivitas Anda meningkat 12% bulan ini!"
+            ],
+            greeting: [
+                "Halo! Saya Academic AI Assistant. Saya siap membantu Anda dengan:\n\n• Tips belajar efektif\n• Manajemen waktu\n• Motivasi & semangat\n• Analisis progress\n\nAda yang bisa saya bantu hari ini?"
+            ]
+        };
+
+        function addAiMessage(type, title, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'ai-message';
+
+            const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            if (type === 'user') {
+                msgDiv.innerHTML = `
                 <div class="ai-content user">
                     <div class="ai-text">${escapeHtml(content)}</div>
                     <div class="ai-timestamp">${time}</div>
                 </div>
                 <div class="ai-avatar">U</div>
             `;
-        } else {
-            msgDiv.innerHTML = `
+            } else {
+                msgDiv.innerHTML = `
                 <div class="ai-avatar">AI</div>
                 <div class="ai-content">
                     <div class="ai-title">${title}</div>
@@ -887,30 +588,30 @@
                     <div class="ai-timestamp">${time}</div>
                 </div>
             `;
+            }
+
+            aiMessages.appendChild(msgDiv);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
         }
-        
-        aiMessages.appendChild(msgDiv);
-        aiMessages.scrollTop = aiMessages.scrollHeight;
-    }
 
-    function formatAiContent(content) {
-        return content
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n/g, '<br>')
-            .replace(/• /g, '&bull; ');
-    }
+        function formatAiContent(content) {
+            return content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>')
+                .replace(/• /g, '&bull; ');
+        }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-    function showTyping() {
-        const typingDiv = document.createElement('div');
-        typingDiv.id = 'aiTyping';
-        typingDiv.className = 'ai-message';
-        typingDiv.innerHTML = `
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'aiTyping';
+            typingDiv.className = 'ai-message';
+            typingDiv.innerHTML = `
             <div class="ai-avatar">AI</div>
             <div class="ai-content">
                 <div class="typing-indicator">
@@ -918,103 +619,75 @@
                 </div>
             </div>
         `;
-        aiMessages.appendChild(typingDiv);
-        aiMessages.scrollTop = aiMessages.scrollHeight;
-    }
-
-    function hideTyping() {
-        const typing = document.getElementById('aiTyping');
-        if (typing) typing.remove();
-    }
-
-    function aiQuickAction(action) {
-        showTyping();
-        setTimeout(() => {
-            hideTyping();
-            const responses = aiResponses[action] || aiResponses.greeting;
-            const response = responses[Math.floor(Math.random() * responses.length)];
-            const titles = {
-                tips: 'Tips Belajar',
-                deadline: 'Status Deadline',
-                motivasi: 'Motivasi',
-                progress: 'Progress Report'
-            };
-            addAiMessage('ai', titles[action] || 'AI Response', response);
-        }, 800 + Math.random() * 500);
-    }
-
-    function sendAiMessage() {
-        const input = document.getElementById('aiInput');
-        const text = input.value.trim();
-        if (!text) return;
-        
-        addAiMessage('user', '', text);
-        input.value = '';
-        
-        showTyping();
-        
-        setTimeout(() => {
-            hideTyping();
-            
-            const lowerText = text.toLowerCase();
-            let response = '';
-            let title = 'Response';
-            
-            if (lowerText.includes('tips') || lowerText.includes('belajar')) {
-                response = aiResponses.tips[Math.floor(Math.random() * aiResponses.tips.length)];
-                title = 'Tips Belajar';
-            } else if (lowerText.includes('deadline') || lowerText.includes('tugas')) {
-                response = aiResponses.deadline[0];
-                title = 'Status Deadline';
-            } else if (lowerText.includes('motivasi') || lowerText.includes('semangat')) {
-                response = aiResponses.motivasi[Math.floor(Math.random() * aiResponses.motivasi.length)];
-                title = 'Motivasi';
-            } else if (lowerText.includes('progress') || lowerText.includes('statistik')) {
-                response = aiResponses.progress[0];
-                title = 'Progress';
-            } else if (lowerText.includes('halo') || lowerText.includes('hai') || lowerText.includes('hello')) {
-                response = "Halo juga! Ada yang bisa saya bantu hari ini? Anda bisa tanya tentang tips belajar, cek deadline, atau minta motivasi!";
-                title = 'Halo!';
-            } else if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
-                response = "Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi ya!";
-                title = 'Response';
-            } else {
-                response = "Saya mengerti! Sebagai Academic AI Assistant, saya bisa membantu Anda dengan:\n\n• Tips belajar efektif\n• Cek status deadline\n• Motivasi harian\n• Analisis progress\n\nSilakan gunakan tombol aksi cepat atau tanyakan hal spesifik!";
-                title = 'AI Assistant';
-            }
-            
-            addAiMessage('ai', title, response);
-        }, 1000 + Math.random() * 500);
-    }
-
-    // Notification Functions
-    function toggleNotifications() {
-        const dropdown = document.getElementById('notificationDropdown');
-        dropdown.classList.toggle('show');
-    }
-
-    function clearNotifications() {
-        const notifList = document.getElementById('notifList');
-        const badge = document.getElementById('notifBadge');
-        
-        notifList.innerHTML = `
-            <div class="notif-empty">
-                <i class="fas fa-check-circle"></i>
-                Tidak ada pengingat tugas
-            </div>
-        `;
-        badge.style.display = 'none';
-    }
-
-    // Close notification dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('notificationDropdown');
-        const link = document.querySelector('.notification-link');
-        
-        if (dropdown && !dropdown.contains(e.target) && !link.contains(e.target)) {
-            dropdown.classList.remove('show');
+            aiMessages.appendChild(typingDiv);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
         }
-    });
+
+        function hideTyping() {
+            const typing = document.getElementById('aiTyping');
+            if (typing) typing.remove();
+        }
+
+        function aiQuickAction(action) {
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                const responses = aiResponses[action] || aiResponses.greeting;
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                const titles = {
+                    tips: 'Tips Belajar',
+                    deadline: 'Status Deadline',
+                    motivasi: 'Motivasi',
+                    progress: 'Progress Report'
+                };
+                addAiMessage('ai', titles[action] || 'AI Response', response);
+            }, 800 + Math.random() * 500);
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById('aiInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addAiMessage('user', '', text);
+            input.value = '';
+
+            showTyping();
+
+            setTimeout(() => {
+                hideTyping();
+
+                const lowerText = text.toLowerCase();
+                let response = '';
+                let title = 'Response';
+
+                if (lowerText.includes('tips') || lowerText.includes('belajar')) {
+                    response = aiResponses.tips[Math.floor(Math.random() * aiResponses.tips.length)];
+                    title = 'Tips Belajar';
+                } else if (lowerText.includes('deadline') || lowerText.includes('tugas')) {
+                    response = aiResponses.deadline[0];
+                    title = 'Status Deadline';
+                } else if (lowerText.includes('motivasi') || lowerText.includes('semangat')) {
+                    response = aiResponses.motivasi[Math.floor(Math.random() * aiResponses.motivasi.length)];
+                    title = 'Motivasi';
+                } else if (lowerText.includes('progress') || lowerText.includes('statistik')) {
+                    response = aiResponses.progress[0];
+                    title = 'Progress';
+                } else if (lowerText.includes('halo') || lowerText.includes('hai') || lowerText.includes('hello')) {
+                    response = "Halo juga! Ada yang bisa saya bantu hari ini? Anda bisa tanya tentang tips belajar, cek deadline, atau minta motivasi!";
+                    title = 'Halo!';
+                } else if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
+                    response = "Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi ya!";
+                    title = 'Response';
+                } else {
+                    response = "Saya mengerti! Sebagai Academic AI Assistant, saya bisa membantu Anda dengan:\n\n• Tips belajar efektif\n• Cek status deadline\n• Motivasi harian\n• Analisis progress\n\nSilakan gunakan tombol aksi cepat atau tanyakan hal spesifik!";
+                    title = 'AI Assistant';
+                }
+
+                addAiMessage('ai', title, response);
+            }, 1000 + Math.random() * 500);
+        }
     </script>
 </body>
+
 </html>

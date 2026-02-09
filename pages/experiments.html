@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Experiment Log - Academic Organizer</title>
+    <meta name="description" content="Experiment Log - Catat hasil eksperimen praktikum">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo.png">
+
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../assets/js/app.js"></script>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="../assets/images/logo.png" alt="Logo" style="width: 36px; height: 36px; object-fit: contain;">
-                    <span>Academic<span style="color: #f97316;">Org</span></span>
+                <h3>
+                    <img src="../assets/images/logo.png" alt="Logo"
+                        style="width: 36px; height: 36px; object-fit: contain;">
+                    <span class="text-gradient">AcademicOrg</span>
                 </h3>
                 <p>Halo, Student!</p>
                 <small>Teknik Informatika</small>
             </div>
-            
+
             <ul class="sidebar-menu">
                 <li>
                     <a href="dashboard.html">
@@ -46,60 +56,84 @@
                     </a>
                 </li>
             </ul>
-            
+
             <a href="../index.html" class="logout-btn">
                 <i class="fas fa-arrow-left"></i> Kembali ke Home
             </a>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="main-content">
             <!-- Content Header -->
             <div class="content-header">
                 <h1>Experiment Log</h1>
-                <p>Catat dan dokumentasikan hasil eksperimen praktikum Anda</p>
+                <p>Catat dan kelola hasil eksperimen praktikum Anda</p>
             </div>
 
-            <!-- Stats -->
-            <div class="quick-stats" style="margin-bottom: 1.5rem;">
+            <!-- Quick Stats -->
+            <div class="quick-stats">
                 <div class="quick-stat-item">
                     <div class="quick-stat-icon">
                         <i class="fas fa-flask"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>8</h5>
+                        <h5 id="totalExperiments">0</h5>
                         <span>Total Eksperimen</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
-                        <i class="fas fa-book"></i>
+                    <div class="quick-stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                        <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>4</h5>
-                        <span>Mata Kuliah</span>
+                        <h5 id="completedExperiments">0</h5>
+                        <span>Selesai</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
-                        <i class="fas fa-calendar-check"></i>
+                    <div class="quick-stat-icon" style="background: rgba(124, 58, 237, 0.2); color: #7c3aed;">
+                        <i class="fas fa-calendar-alt"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>3</h5>
+                        <h5 id="thisMonth">0</h5>
                         <span>Bulan Ini</span>
+                    </div>
+                </div>
+                <div class="quick-stat-item">
+                    <div class="quick-stat-icon" style="background: rgba(244, 114, 182, 0.2); color: #f472b6;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="quick-stat-text">
+                        <h5>A+</h5>
+                        <span>Rata-rata Nilai</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Experiments Table -->
+            <!-- Action Bar -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="openModal('add')">
+                        <i class="fas fa-plus"></i> Tambah Eksperimen
+                    </button>
+                    <button class="btn btn-secondary" onclick="AcademicOrganizer.exportData()">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="color: var(--text-tertiary); font-size: 0.875rem;">Cari:</span>
+                    <input type="text" id="searchInput" class="form-control" style="width: 200px;"
+                        placeholder="Cari eksperimen..." oninput="filterExperiments()">
+                </div>
+            </div>
+
+            <!-- Table -->
             <div class="table-container">
                 <div class="table-header">
                     <h2><i class="fas fa-flask"></i> Daftar Eksperimen</h2>
-                    <button class="btn-add" onclick="alert('Demo mode - fitur ini tidak tersedia di GitHub Pages')">
-                        <i class="fas fa-plus"></i> Tambah Eksperimen
-                    </button>
                 </div>
-                
+
                 <table>
                     <thead>
                         <tr>
@@ -110,121 +144,225 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Pengukuran Tegangan Listrik</td>
-                            <td>Fisika Dasar</td>
-                            <td>18 Januari 2025</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Analisis Rangkaian RC</td>
-                            <td>Elektronika</td>
-                            <td>15 Januari 2025</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Percobaan Optika Geometri</td>
-                            <td>Fisika Dasar</td>
-                            <td>12 Januari 2025</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Pengukuran Viskositas Fluida</td>
-                            <td>Fisika Dasar</td>
-                            <td>8 Januari 2025</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Simulasi Rangkaian Digital</td>
-                            <td>Sistem Digital</td>
-                            <td>5 Januari 2025</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Analisis Spektrum Cahaya</td>
-                            <td>Fisika Dasar</td>
-                            <td>28 Desember 2024</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Pengujian Op-Amp</td>
-                            <td>Elektronika</td>
-                            <td>20 Desember 2024</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Percobaan Hukum Ohm</td>
-                            <td>Fisika Dasar</td>
-                            <td>15 Desember 2024</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="experimentsTable">
+                        <!-- Will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
-
-            <!-- Info Box -->
-            <div class="alert alert-info" style="margin-top: 1.5rem;">
-                <i class="fas fa-info-circle"></i>
-                <span>Ini adalah versi demo. Untuk fitur lengkap dengan database, gunakan versi hosting PHP.</span>
-            </div>
         </main>
     </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="experimentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Eksperimen Baru</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="experimentForm" onsubmit="saveExperiment(event)">
+                    <input type="hidden" id="experimentId">
+
+                    <div class="form-group">
+                        <label><i class="fas fa-heading"></i> Judul Eksperimen</label>
+                        <input type="text" id="experimentTitle" class="form-control" required
+                            placeholder="Masukkan judul eksperimen...">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Mata Kuliah</label>
+                        <input type="text" id="experimentSubject" class="form-control" required
+                            placeholder="Contoh: Fisika Dasar">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Tanggal Eksperimen</label>
+                        <input type="date" id="experimentDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-circle-check"></i> Status</label>
+                        <select id="experimentStatus" class="form-control" required>
+                            <option value="sedang">Sedang Berlangsung</option>
+                            <option value="selesai">Selesai</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button type="submit" form="experimentForm" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Hapus Eksperimen</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary);">Apakah Anda yakin ingin menghapus eksperimen ini? Tindakan ini
+                    tidak dapat dikembalikan.</p>
+                <input type="hidden" id="deleteExperimentId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof AcademicOrganizer !== 'undefined') {
+                AcademicOrganizer.init();
+            }
+            loadExperiments();
+        });
+
+        function loadExperiments() {
+            const experiments = AcademicOrganizer.getExperiments();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            // Update stats
+            document.getElementById('totalExperiments').textContent = experiments.length;
+            document.getElementById('completedExperiments').textContent = experiments.filter(e => e.status === 'selesai').length;
+
+            // Count this month
+            const thisMonth = new Date().toISOString().slice(0, 7);
+            const thisMonthCount = experiments.filter(e => e.date && e.date.startsWith(thisMonth)).length;
+            document.getElementById('thisMonth').textContent = thisMonthCount;
+
+            // Filter experiments
+            let filtered = experiments;
+            if (searchTerm) {
+                filtered = experiments.filter(e =>
+                    e.title.toLowerCase().includes(searchTerm) ||
+                    e.subject.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Render table
+            const tbody = document.getElementById('experimentsTable');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-state" style="padding: 3rem;">
+                        <i class="fas fa-flask" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <p style="margin: 0;">Tidak ada eksperimen yang ditemukan</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(exp => `
+            <tr>
+                <td><strong>${escapeHtml(exp.title)}</strong></td>
+                <td>${escapeHtml(exp.subject)}</td>
+                <td>${AcademicOrganizer.formatDate(exp.date)}</td>
+                <td><span class="status-badge ${AcademicOrganizer.getStatusClass(exp.status)}">${AcademicOrganizer.getStatusLabel(exp.status)}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" title="Edit" onclick="openModal('edit', ${exp.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-delete" title="Hapus" onclick="openDeleteModal(${exp.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function filterExperiments() {
+            loadExperiments();
+        }
+
+        function openModal(mode, expId = null) {
+            const modal = document.getElementById('experimentModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('experimentForm');
+
+            form.reset();
+            document.getElementById('experimentId').value = '';
+
+            if (mode === 'edit' && expId) {
+                title.textContent = 'Edit Eksperimen';
+                const experiments = AcademicOrganizer.getExperiments();
+                const exp = experiments.find(e => e.id === expId);
+
+                if (exp) {
+                    document.getElementById('experimentId').value = exp.id;
+                    document.getElementById('experimentTitle').value = exp.title;
+                    document.getElementById('experimentSubject').value = exp.subject;
+                    document.getElementById('experimentDate').value = exp.date;
+                    document.getElementById('experimentStatus').value = exp.status;
+                }
+            } else {
+                title.textContent = 'Tambah Eksperimen Baru';
+                // Set default date to today
+                document.getElementById('experimentDate').value = new Date().toISOString().split('T')[0];
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('experimentModal').classList.remove('show');
+        }
+
+        function saveExperiment(e) {
+            e.preventDefault();
+
+            const expId = document.getElementById('experimentId').value;
+            const expData = {
+                title: document.getElementById('experimentTitle').value,
+                subject: document.getElementById('experimentSubject').value,
+                date: document.getElementById('experimentDate').value,
+                status: document.getElementById('experimentStatus').value
+            };
+
+            if (expId) {
+                AcademicOrganizer.updateExperiment(parseInt(expId), expData);
+            } else {
+                AcademicOrganizer.addExperiment(expData);
+            }
+
+            closeModal();
+            loadExperiments();
+        }
+
+        function openDeleteModal(expId) {
+            document.getElementById('deleteExperimentId').value = expId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDelete() {
+            const expId = parseInt(document.getElementById('deleteExperimentId').value);
+            AcademicOrganizer.deleteExperiment(expId);
+            closeDeleteModal();
+            loadExperiments();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
 </body>
+
 </html>

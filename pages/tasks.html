@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager - Academic Organizer</title>
+    <meta name="description" content="Task Manager - Kelola tugas kuliah dengan efisien">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo.png">
+
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../assets/js/app.js"></script>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="../assets/images/logo.png" alt="Logo" style="width: 36px; height: 36px; object-fit: contain;">
-                    <span>Academic<span style="color: #f97316;">Org</span></span>
+                <h3>
+                    <img src="../assets/images/logo.png" alt="Logo"
+                        style="width: 36px; height: 36px; object-fit: contain;">
+                    <span class="text-gradient">AcademicOrg</span>
                 </h3>
                 <p>Halo, Student!</p>
                 <small>Teknik Informatika</small>
             </div>
-            
+
             <ul class="sidebar-menu">
                 <li>
                     <a href="dashboard.html">
@@ -46,28 +56,28 @@
                     </a>
                 </li>
             </ul>
-            
+
             <a href="../index.html" class="logout-btn">
                 <i class="fas fa-arrow-left"></i> Kembali ke Home
             </a>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="main-content">
             <!-- Content Header -->
             <div class="content-header">
                 <h1>Task Manager</h1>
-                <p>Kelola tugas kuliah Anda dengan efisien</p>
+                <p>Kelola semua tugas kuliah Anda di sini</p>
             </div>
 
-            <!-- Filter & Stats -->
-            <div class="quick-stats" style="margin-bottom: 1.5rem;">
+            <!-- Quick Stats -->
+            <div class="quick-stats">
                 <div class="quick-stat-item">
                     <div class="quick-stat-icon">
-                        <i class="fas fa-list"></i>
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>16</h5>
+                        <h5 id="totalTasks">0</h5>
                         <span>Total Tugas</span>
                     </div>
                 </div>
@@ -76,39 +86,62 @@
                         <i class="fas fa-exclamation-circle"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>2</h5>
+                        <h5 id="pendingTasks">0</h5>
                         <span>Belum Selesai</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">
+                    <div class="quick-stat-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
                         <i class="fas fa-spinner"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>2</h5>
+                        <h5 id="inProgressTasks">0</h5>
                         <span>Sedang Dikerjakan</span>
                     </div>
                 </div>
                 <div class="quick-stat-item">
-                    <div class="quick-stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                    <div class="quick-stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="quick-stat-text">
-                        <h5>12</h5>
+                        <h5 id="completedTasks">0</h5>
                         <span>Selesai</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Tasks Table -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h2><i class="fas fa-tasks"></i> Daftar Tugas</h2>
-                    <button class="btn-add" onclick="alert('Demo mode - fitur ini tidak tersedia di GitHub Pages')">
+            <!-- Action Bar -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="openModal('add')">
                         <i class="fas fa-plus"></i> Tambah Tugas
                     </button>
+                    <button class="btn btn-secondary" onclick="AcademicOrganizer.exportData()">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <label class="btn btn-secondary" style="cursor: pointer;">
+                        <i class="fas fa-upload"></i> Import Data
+                        <input type="file" accept=".json" style="display: none;" onchange="importData(event)">
+                    </label>
                 </div>
-                
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="color: var(--text-tertiary); font-size: 0.875rem;">Filter:</span>
+                    <select id="filterStatus" class="form-control" style="width: auto;" onchange="filterTasks()">
+                        <option value="all">Semua Status</option>
+                        <option value="belum">Belum Selesai</option>
+                        <option value="sedang">Sedang Dikerjakan</option>
+                        <option value="selesai">Selesai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Daftar Tugas</h2>
+                </div>
+
                 <table>
                     <thead>
                         <tr>
@@ -120,129 +153,251 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Laporan Praktikum Fisika</td>
-                            <td>Fisika Dasar</td>
-                            <td>25 Januari 2025</td>
-                            <td><span class="badge priority-high">Tinggi</span></td>
-                            <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Tugas Pemrograman Web</td>
-                            <td>Web Development</td>
-                            <td>28 Januari 2025</td>
-                            <td><span class="badge priority-high">Tinggi</span></td>
-                            <td><span class="status-badge status-belum">Belum Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Essay Bahasa Inggris</td>
-                            <td>English</td>
-                            <td>22 Januari 2025</td>
-                            <td><span class="badge priority-medium">Sedang</span></td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Presentasi Algoritma</td>
-                            <td>Struktur Data</td>
-                            <td>30 Januari 2025</td>
-                            <td><span class="badge priority-high">Tinggi</span></td>
-                            <td><span class="status-badge status-belum">Belum Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Quiz Matematika Diskrit</td>
-                            <td>Matematika</td>
-                            <td>20 Januari 2025</td>
-                            <td><span class="badge priority-low">Rendah</span></td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Database</td>
-                            <td>Basis Data</td>
-                            <td>5 Februari 2025</td>
-                            <td><span class="badge priority-medium">Sedang</span></td>
-                            <td><span class="status-badge status-sedang">Sedang Dikerjakan</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Makalah Kewarganegaraan</td>
-                            <td>PKN</td>
-                            <td>15 Januari 2025</td>
-                            <td><span class="badge priority-low">Rendah</span></td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>UTS Jaringan Komputer</td>
-                            <td>Jaringan Komputer</td>
-                            <td>10 Januari 2025</td>
-                            <td><span class="badge priority-high">Tinggi</span></td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-view" onclick="alert('Demo mode')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-edit" onclick="alert('Demo mode')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-delete" onclick="alert('Demo mode')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="tasksTable">
+                        <!-- Will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
-
-            <!-- Info Box -->
-            <div class="alert alert-info" style="margin-top: 1.5rem;">
-                <i class="fas fa-info-circle"></i>
-                <span>Ini adalah versi demo. Untuk fitur lengkap dengan database, gunakan versi hosting PHP.</span>
-            </div>
         </main>
     </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Tugas Baru</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" onsubmit="saveTask(event)">
+                    <input type="hidden" id="taskId">
+
+                    <div class="form-group">
+                        <label><i class="fas fa-heading"></i> Judul Tugas</label>
+                        <input type="text" id="taskTitle" class="form-control" required
+                            placeholder="Masukkan judul tugas...">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Mata Kuliah</label>
+                        <input type="text" id="taskSubject" class="form-control" required
+                            placeholder="Contoh: Fisika Dasar">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Deadline</label>
+                        <input type="date" id="taskDeadline" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Prioritas</label>
+                        <select id="taskPriority" class="form-control" required>
+                            <option value="low">Rendah</option>
+                            <option value="medium">Sedang</option>
+                            <option value="high">Tinggi</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-circle-check"></i> Status</label>
+                        <select id="taskStatus" class="form-control" required>
+                            <option value="belum">Belum Selesai</option>
+                            <option value="sedang">Sedang Dikerjakan</option>
+                            <option value="selesai">Selesai</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button type="submit" form="taskForm" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Hapus Tugas</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary);">Apakah Anda yakin ingin menghapus tugas ini? Tindakan ini tidak
+                    dapat dikembalikan.</p>
+                <input type="hidden" id="deleteTaskId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof AcademicOrganizer !== 'undefined') {
+                AcademicOrganizer.init();
+            }
+            loadTasks();
+        });
+
+        function loadTasks() {
+            const tasks = AcademicOrganizer.getTasks();
+            const stats = AcademicOrganizer.getStats();
+            const filter = document.getElementById('filterStatus').value;
+
+            // Update stats
+            document.getElementById('totalTasks').textContent = stats.totalTasks;
+            document.getElementById('pendingTasks').textContent = stats.pendingTasks;
+            document.getElementById('inProgressTasks').textContent = stats.inProgressTasks;
+            document.getElementById('completedTasks').textContent = stats.completedTasks;
+
+            // Filter tasks
+            let filteredTasks = tasks;
+            if (filter !== 'all') {
+                filteredTasks = tasks.filter(t => t.status === filter);
+            }
+
+            // Render table
+            const tbody = document.getElementById('tasksTable');
+            if (filteredTasks.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state" style="padding: 3rem;">
+                        <i class="fas fa-clipboard-check" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <p style="margin: 0;">Tidak ada tugas yang ditemukan</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = filteredTasks.map(task => `
+            <tr>
+                <td><strong>${escapeHtml(task.title)}</strong></td>
+                <td>${escapeHtml(task.subject)}</td>
+                <td>${AcademicOrganizer.formatDate(task.deadline)}</td>
+                <td><span class="badge ${AcademicOrganizer.getPriorityClass(task.priority)}">${AcademicOrganizer.getPriorityLabel(task.priority)}</span></td>
+                <td><span class="status-badge ${AcademicOrganizer.getStatusClass(task.status)}">${AcademicOrganizer.getStatusLabel(task.status)}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" title="Edit" onclick="openModal('edit', ${task.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-delete" title="Hapus" onclick="openDeleteModal(${task.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function filterTasks() {
+            loadTasks();
+        }
+
+        function openModal(mode, taskId = null) {
+            const modal = document.getElementById('taskModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('taskForm');
+
+            form.reset();
+            document.getElementById('taskId').value = '';
+
+            if (mode === 'edit' && taskId) {
+                title.textContent = 'Edit Tugas';
+                const tasks = AcademicOrganizer.getTasks();
+                const task = tasks.find(t => t.id === taskId);
+
+                if (task) {
+                    document.getElementById('taskId').value = task.id;
+                    document.getElementById('taskTitle').value = task.title;
+                    document.getElementById('taskSubject').value = task.subject;
+                    document.getElementById('taskDeadline').value = task.deadline;
+                    document.getElementById('taskPriority').value = task.priority;
+                    document.getElementById('taskStatus').value = task.status;
+                }
+            } else {
+                title.textContent = 'Tambah Tugas Baru';
+                // Set default deadline to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 7);
+                document.getElementById('taskDeadline').value = tomorrow.toISOString().split('T')[0];
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').classList.remove('show');
+        }
+
+        function saveTask(e) {
+            e.preventDefault();
+
+            const taskId = document.getElementById('taskId').value;
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                subject: document.getElementById('taskSubject').value,
+                deadline: document.getElementById('taskDeadline').value,
+                priority: document.getElementById('taskPriority').value,
+                status: document.getElementById('taskStatus').value
+            };
+
+            if (taskId) {
+                AcademicOrganizer.updateTask(parseInt(taskId), taskData);
+            } else {
+                AcademicOrganizer.addTask(taskData);
+            }
+
+            closeModal();
+            loadTasks();
+        }
+
+        function openDeleteModal(taskId) {
+            document.getElementById('deleteTaskId').value = taskId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDelete() {
+            const taskId = parseInt(document.getElementById('deleteTaskId').value);
+            AcademicOrganizer.deleteTask(taskId);
+            closeDeleteModal();
+            loadTasks();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (file) {
+                AcademicOrganizer.importData(file)
+                    .then(() => {
+                        loadTasks();
+                        alert('Data berhasil diimport!');
+                    })
+                    .catch(err => {
+                        alert('Error: ' + err.message);
+                    });
+            }
+            event.target.value = '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
 </body>
+
 </html>

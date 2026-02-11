@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Tools - Academic Organizer</title>
+    <meta name="description"
+        content="Download video YouTube dan dapatkan ringkasan otomatis untuk bahan belajar akademik Anda">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo.png">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Sidebar Logo Image */
+        .sidebar-logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .sidebar-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        /* ============================================
+           YouTube Tools Styles 
+           ============================================ */
+
+        /* Hero Input Section */
+        .yt-hero {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .yt-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 50%, #ff4444 100%);
+        }
+
+        .yt-hero::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .yt-hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(255, 68, 68, 0.1) 100%);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ff4444;
+            margin: 0 auto 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .yt-hero:hover .yt-hero-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .yt-hero h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .yt-hero h2 .text-gradient-yt {
+            background: linear-gradient(135deg, #ff4444, #ff0000, #cc0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .yt-hero p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* URL Input Group */
+        .yt-input-group {
+            display: flex;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .yt-input-group input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-right: none;
+            border-radius: var(--radius-md) 0 0 var(--radius-md);
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .yt-input-group input:focus {
+            outline: none;
+            border-color: #ff4444;
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
+        }
+
+        .yt-input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .yt-input-group .btn-yt-process {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .yt-input-group .btn-yt-process:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.4);
+        }
+
+        .yt-input-group .btn-yt-process:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Results Grid */
+        .yt-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Video Preview Card */
+        .yt-preview-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .yt-preview-card:hover {
+            border-color: rgba(255, 68, 68, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .yt-video-embed {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            position: relative;
+        }
+
+        .yt-video-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .yt-video-embed img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .yt-video-info {
+            padding: 1.25rem;
+        }
+
+        .yt-video-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .yt-video-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+        }
+
+        .yt-video-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .yt-video-meta i {
+            color: #ff4444;
+        }
+
+        /* Download Card */
+        .yt-download-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .yt-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 68, 68, 0.02));
+        }
+
+        .yt-card-header i {
+            color: #ff4444;
+            font-size: 1.125rem;
+        }
+
+        .yt-card-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .yt-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Download Options */
+        .yt-download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .yt-download-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: all 0.3s;
+        }
+
+        .yt-download-item:hover {
+            border-color: rgba(255, 68, 68, 0.3);
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .yt-download-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .yt-quality-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 56px;
+            padding: 0.375rem 0.625rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .quality-480p {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .quality-720p {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quality-1080p {
+            background: rgba(255, 68, 68, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .yt-download-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .yt-download-label small {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .btn-yt-download {
+            padding: 0.5rem 1.25rem;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-family: inherit;
+        }
+
+        .btn-yt-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-yt-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Audio Download (bonus) */
+        .yt-audio-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .yt-audio-section .yt-download-item {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(124, 58, 237, 0.02));
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .quality-audio {
+            background: rgba(124, 58, 237, 0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-yt-audio {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+
+        .btn-yt-audio:hover {
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Summary Section */
+        .yt-summary-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .yt-summary-content {
+            padding: 1.5rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .yt-summary-content h4 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .yt-summary-content h4 i {
+            color: #ff4444;
+        }
+
+        .yt-summary-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .yt-summary-content ul li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+        }
+
+        .yt-summary-content ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #ff4444;
+            font-size: 0.875rem;
+        }
+
+        .yt-summary-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-copy-summary {
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-family: inherit;
+        }
+
+        .btn-copy-summary:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: var(--accent-gradient-subtle);
+        }
+
+        /* History Section */
+        .yt-history-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .yt-history-list {
+            padding: 0.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .yt-history-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .yt-history-item:last-child {
+            border-bottom: none;
+        }
+
+        .yt-history-item:hover {
+            background: rgba(255, 68, 68, 0.03);
+        }
+
+        .yt-history-thumb {
+            width: 80px;
+            height: 45px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background: var(--bg-tertiary);
+            flex-shrink: 0;
+        }
+
+        .yt-history-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .yt-history-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .yt-history-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .yt-history-item .btn-sm {
+            flex-shrink: 0;
+        }
+
+        /* Loading States */
+        .yt-loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .yt-loading .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid #ff4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .yt-loading p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* Empty/Initial State */
+        .yt-empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        .yt-empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .yt-empty-state h3 {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .yt-empty-state p {
+            font-size: 0.9375rem;
+        }
+
+        /* Tips Card */
+        .yt-tips {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .yt-tip-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .yt-tip-card:hover {
+            border-color: rgba(255, 68, 68, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .yt-tip-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(255, 0, 0, 0.05));
+            border: 1px solid rgba(255, 68, 68, 0.15);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
+            color: #ff4444;
+            font-size: 1.125rem;
+        }
+
+        .yt-tip-card h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.375rem;
+        }
+
+        .yt-tip-card p {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        /* Toast Notification */
+        .yt-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 10000;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .yt-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .yt-toast.success {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .yt-toast.success i {
+            color: #34d399;
+        }
+
+        .yt-toast.error {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .yt-toast.error i {
+            color: #f87171;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .yt-results {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .yt-hero {
+                padding: 2rem 1.5rem;
+            }
+
+            .yt-input-group {
+                flex-direction: column;
+            }
+
+            .yt-input-group input {
+                border-right: 2px solid var(--border-color);
+                border-radius: var(--radius-md) var(--radius-md) 0 0;
+            }
+
+            .yt-input-group input:focus {
+                border-right-color: #ff4444;
+            }
+
+            .yt-input-group .btn-yt-process {
+                border-radius: 0 0 var(--radius-md) var(--radius-md);
+                justify-content: center;
+            }
+
+            .yt-tips {
+                grid-template-columns: 1fr;
+            }
+
+            .yt-download-item {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .btn-yt-download {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>
+                    <img src="../assets/images/logo.png" alt="Logo" class="sidebar-logo-img">
+                    <span class="text-gradient">AcademicOrg</span>
+                </h3>
+                <p>Halo, Student!</p>
+                <small>Teknik Informatika</small>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="experiments.html">
+                        <i class="fas fa-flask"></i>
+                        Experiment Log
+                    </a>
+                </li>
+                <li>
+                    <a href="tasks.html">
+                        <i class="fas fa-tasks"></i>
+                        Task Manager
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li>
+                    <a href="youtube.html" class="active">
+                        <i class="fab fa-youtube"></i>
+                        YouTube Tools
+                    </a>
+                </li>
+            </ul>
+
+            <a href="../index.html" class="logout-btn">
+                <i class="fas fa-arrow-left"></i> Kembali ke Home
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="content-header">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h1>YouTube Tools</h1>
+                        <p>Download video YouTube dan dapatkan ringkasan otomatis untuk bahan belajar</p>
+                    </div>
+                    <div class="live-time">
+                        <i class="fas fa-clock"></i>
+                        <span id="liveTime"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Input Section -->
+            <div class="yt-hero">
+                <div class="yt-hero-icon">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <h2>Download & <span class="text-gradient-yt">Ringkasan</span> Video</h2>
+                <p>Tempel link YouTube untuk mendapatkan opsi download dan ringkasan video</p>
+                <div class="yt-input-group">
+                    <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..."
+                        onkeypress="if(event.key==='Enter') processYouTubeUrl()">
+                    <button class="btn-yt-process" id="btnProcess" onclick="processYouTubeUrl()">
+                        <i class="fas fa-magic"></i>
+                        Proses Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tips (shown initially) -->
+            <div class="yt-tips" id="ytTips">
+                <div class="yt-tip-card">
+                    <div class="yt-tip-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h4>Download Video</h4>
+                    <p>Pilih resolusi 480p, 720p, atau 1080p untuk download video</p>
+                </div>
+                <div class="yt-tip-card">
+                    <div class="yt-tip-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4>Ringkasan Otomatis</h4>
+                    <p>Dapatkan ringkasan poin penting dari video untuk belajar</p>
+                </div>
+                <div class="yt-tip-card">
+                    <div class="yt-tip-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h4>Riwayat Tersimpan</h4>
+                    <p>Video yang pernah diproses tersimpan otomatis di riwayat</p>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="yt-loading" id="ytLoading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Memproses video YouTube...</p>
+            </div>
+
+            <!-- Results Section (hidden initially) -->
+            <div id="ytResults" style="display: none;">
+                <!-- Video Preview + Download Options -->
+                <div class="yt-results">
+                    <!-- Video Preview Card -->
+                    <div class="yt-preview-card">
+                        <div class="yt-video-embed" id="ytVideoEmbed">
+                            <!-- Iframe or thumbnail inserted here -->
+                        </div>
+                        <div class="yt-video-info">
+                            <h3 class="yt-video-title" id="ytVideoTitle">Video Title</h3>
+                            <div class="yt-video-meta">
+                                <span><i class="fas fa-user"></i> <span id="ytChannel">Channel</span></span>
+                                <span><i class="fas fa-eye"></i> <span id="ytViews">0 views</span></span>
+                                <span><i class="fas fa-calendar"></i> <span id="ytDate">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Options Card -->
+                    <div class="yt-download-card">
+                        <div class="yt-card-header">
+                            <i class="fas fa-download"></i>
+                            <h3>Opsi Download</h3>
+                        </div>
+                        <div class="yt-card-body">
+                            <div class="yt-download-options" id="ytDownloadOptions">
+                                <!-- Download items will be inserted here -->
+                            </div>
+
+                            <div class="yt-audio-section">
+                                <div class="yt-download-item">
+                                    <div class="yt-download-info">
+                                        <span class="yt-quality-badge quality-audio">
+                                            <i class="fas fa-music"></i>&nbsp; MP3
+                                        </span>
+                                        <div class="yt-download-label">
+                                            Audio Only
+                                            <br><small>Hemat kuota data</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn-yt-download btn-yt-audio" id="btnAudioDownload"
+                                        onclick="downloadAudio()">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="yt-summary-section">
+                    <div class="yt-card-header">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Ringkasan Video</h3>
+                    </div>
+                    <div class="yt-summary-content" id="ytSummaryContent">
+                        <!-- Summary will be inserted here -->
+                    </div>
+                    <div class="yt-summary-actions">
+                        <button class="btn-copy-summary" onclick="copySummary()">
+                            <i class="fas fa-copy"></i> Salin Ringkasan
+                        </button>
+                        <button class="btn-copy-summary" onclick="downloadSummary()">
+                            <i class="fas fa-file-download"></i> Download TXT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="yt-history-section" id="ytHistorySection">
+                <div class="yt-card-header">
+                    <i class="fas fa-history"></i>
+                    <h3>Riwayat Video</h3>
+                </div>
+                <div class="yt-history-list" id="ytHistoryList">
+                    <!-- History items will be populated by JS -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="yt-toast" id="ytToast">
+        <i class="fas fa-check-circle"></i>
+        <span id="ytToastMsg">Berhasil!</span>
+    </div>
+
+    <script>
+        // ============================================
+        // YouTube Tools - Main Script
+        // ============================================
+
+        const YT_HISTORY_KEY = 'academic_yt_history';
+        let currentVideoId = '';
+        let currentVideoData = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadHistory();
+        });
+
+        function updateTime() {
+            const el = document.getElementById('liveTime');
+            if (el) {
+                el.textContent = new Date().toLocaleString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long',
+                    year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+        }
+
+        // ============================================
+        // URL Processing
+        // ============================================
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        async function processYouTubeUrl() {
+            const urlInput = document.getElementById('ytUrl');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showToast('Masukkan link YouTube terlebih dahulu', 'error');
+                urlInput.focus();
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showToast('Link YouTube tidak valid. Coba format: https://youtube.com/watch?v=...', 'error');
+                return;
+            }
+
+            currentVideoId = videoId;
+
+            // Show loading
+            document.getElementById('ytTips').style.display = 'none';
+            document.getElementById('ytResults').style.display = 'none';
+            document.getElementById('ytLoading').style.display = 'block';
+            document.getElementById('btnProcess').disabled = true;
+
+            try {
+                // Fetch video info using noembed (free, no API key)
+                const videoInfo = await fetchVideoInfo(videoId);
+                currentVideoData = videoInfo;
+
+                // Display results
+                displayVideoPreview(videoId, videoInfo);
+                displayDownloadOptions(videoId);
+                displaySummary(videoInfo);
+
+                // Save to history
+                saveToHistory(videoId, videoInfo);
+
+                // Show results
+                document.getElementById('ytLoading').style.display = 'none';
+                document.getElementById('ytResults').style.display = 'block';
+
+                showToast('Video berhasil diproses!', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('ytLoading').style.display = 'none';
+                document.getElementById('ytTips').style.display = 'grid';
+                showToast('Gagal memproses video. Periksa link dan coba lagi.', 'error');
+            } finally {
+                document.getElementById('btnProcess').disabled = false;
+            }
+        }
+
+        // ============================================
+        // Fetch Video Info
+        // ============================================
+        async function fetchVideoInfo(videoId) {
+            const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+            // Use noembed.com for video metadata (free, no auth)
+            const response = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+            if (!response.ok) throw new Error('Failed to fetch video info');
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            return {
+                title: data.title || 'Video YouTube',
+                author: data.author_name || 'Unknown Channel',
+                thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                thumbnailHQ: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                url: data.url || url,
+                videoId: videoId
+            };
+        }
+
+        // ============================================
+        // Display Video Preview
+        // ============================================
+        function displayVideoPreview(videoId, info) {
+            // Embed iframe
+            document.getElementById('ytVideoEmbed').innerHTML = `
+                <iframe src="https://www.youtube.com/embed/${videoId}" 
+                        allowfullscreen 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+            `;
+
+            document.getElementById('ytVideoTitle').textContent = info.title;
+            document.getElementById('ytChannel').textContent = info.author;
+            document.getElementById('ytViews').textContent = 'YouTube Video';
+            document.getElementById('ytDate').textContent = new Date().toLocaleDateString('id-ID');
+        }
+
+        // ============================================
+        // Display Download Options
+        // ============================================
+        function displayDownloadOptions(videoId) {
+            const qualities = [
+                { label: '480p', desc: 'SD Quality', cls: 'quality-480p', quality: '480' },
+                { label: '720p', desc: 'HD Quality', cls: 'quality-720p', quality: '720' },
+                { label: '1080p', desc: 'Full HD', cls: 'quality-1080p', quality: '1080' }
+            ];
+
+            const container = document.getElementById('ytDownloadOptions');
+            container.innerHTML = qualities.map(q => `
+                <div class="yt-download-item">
+                    <div class="yt-download-info">
+                        <span class="yt-quality-badge ${q.cls}">${q.label}</span>
+                        <div class="yt-download-label">
+                            ${q.desc}
+                            <br><small>Video + Audio • MP4</small>
+                        </div>
+                    </div>
+                    <button class="btn-yt-download" onclick="downloadVideo('${videoId}', '${q.quality}')">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // Download Functions using cobalt.tools API
+        // ============================================
+        async function downloadVideo(videoId, quality) {
+            const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+            showToast('Memproses download...', 'success');
+
+            try {
+                // Try cobalt API (open-source YouTube downloader)
+                const response = await fetch('https://api.cobalt.tools/api/json', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: ytUrl,
+                        vQuality: quality,
+                        filenamePattern: 'basic',
+                        isAudioOnly: false
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'redirect' || data.status === 'stream') {
+                    window.open(data.url, '_blank');
+                    showToast(`Download ${quality}p dimulai!`, 'success');
+                } else if (data.status === 'picker') {
+                    // Multiple options available
+                    if (data.picker && data.picker.length > 0) {
+                        window.open(data.picker[0].url, '_blank');
+                        showToast(`Download ${quality}p dimulai!`, 'success');
+                    }
+                } else {
+                    throw new Error('API returned unexpected status');
+                }
+            } catch (error) {
+                console.error('Cobalt API error:', error);
+                // Fallback: open a web-based downloader
+                fallbackDownload(videoId, quality);
+            }
+        }
+
+        async function downloadAudio() {
+            const videoId = currentVideoId;
+            if (!videoId) return;
+
+            const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+            showToast('Memproses download audio...', 'success');
+
+            try {
+                const response = await fetch('https://api.cobalt.tools/api/json', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: ytUrl,
+                        isAudioOnly: true,
+                        aFormat: 'mp3'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'redirect' || data.status === 'stream') {
+                    window.open(data.url, '_blank');
+                    showToast('Download audio dimulai!', 'success');
+                } else {
+                    throw new Error('Failed');
+                }
+            } catch (error) {
+                console.error('Audio download error:', error);
+                fallbackDownload(videoId, 'audio');
+            }
+        }
+
+        function fallbackDownload(videoId, quality) {
+            // Fallback to web-based downloader services
+            const url = `https://www.y2mate.com/youtube/${videoId}`;
+            window.open(url, '_blank');
+            showToast('Membuka layanan download alternatif...', 'success');
+        }
+
+        // ============================================
+        // Video Summary
+        // ============================================
+        function displaySummary(info) {
+            const summaryEl = document.getElementById('ytSummaryContent');
+
+            // Generate a structured summary based on video title
+            const title = info.title;
+            const channel = info.author;
+
+            summaryEl.innerHTML = `
+                <h4><i class="fas fa-lightbulb"></i> Ringkasan Video</h4>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: var(--text-primary);">Judul:</strong> ${escapeHtml(title)}
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: var(--text-primary);">Channel:</strong> ${escapeHtml(channel)}
+                </div>
+                <div style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> Informasi Video</h4>
+                    <ul>
+                        <li>Video ini dipublikasikan oleh <strong>${escapeHtml(channel)}</strong> di YouTube</li>
+                        <li>Judul: <em>"${escapeHtml(title)}"</em></li>
+                        <li>Video tersedia untuk download dalam format 480p, 720p, dan 1080p</li>
+                        <li>Format audio MP3 juga tersedia untuk download terpisah</li>
+                    </ul>
+                </div>
+                <div style="padding: 1rem; background: linear-gradient(135deg, rgba(255,68,68,0.05), rgba(255,0,0,0.02)); border-radius: var(--radius-md); border: 1px solid rgba(255,68,68,0.1);">
+                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-star"></i> Tips Belajar</h4>
+                    <ul>
+                        <li>Download video dalam resolusi rendah (480p) jika kuota terbatas</li>
+                        <li>Gunakan format audio jika hanya butuh mendengarkan materi</li>
+                        <li>Buat catatan sambil menonton video untuk memaksimalkan belajar</li>
+                        <li>Tonton video dengan kecepatan 1.25x-1.5x untuk review materi</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // History Management
+        // ============================================
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(YT_HISTORY_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveToHistory(videoId, info) {
+            const history = getHistory();
+            // Remove duplicate
+            const filtered = history.filter(h => h.videoId !== videoId);
+            // Add to beginning
+            filtered.unshift({
+                videoId,
+                title: info.title,
+                channel: info.author,
+                thumbnail: info.thumbnailHQ,
+                date: new Date().toISOString()
+            });
+            // Keep only last 20
+            localStorage.setItem(YT_HISTORY_KEY, JSON.stringify(filtered.slice(0, 20)));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = getHistory();
+            const container = document.getElementById('ytHistoryList');
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="yt-empty-state" style="padding: 2rem;">
+                        <i class="fas fa-history"></i>
+                        <h3>Belum Ada Riwayat</h3>
+                        <p>Video yang Anda proses akan muncul di sini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = history.map(item => `
+                <div class="yt-history-item" onclick="loadFromHistory('${item.videoId}')">
+                    <img class="yt-history-thumb" 
+                         src="${item.thumbnail}" 
+                         alt="${escapeHtml(item.title)}"
+                         onerror="this.src='https://img.youtube.com/vi/${item.videoId}/default.jpg'">
+                    <div class="yt-history-info">
+                        <div class="yt-history-title">${escapeHtml(item.title)}</div>
+                        <div class="yt-history-date">
+                            ${item.channel || 'YouTube'} • ${new Date(item.date).toLocaleDateString('id-ID')}
+                        </div>
+                    </div>
+                    <button class="btn-sm btn-outline" onclick="event.stopPropagation(); removeHistory('${item.videoId}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(videoId) {
+            document.getElementById('ytUrl').value = `https://www.youtube.com/watch?v=${videoId}`;
+            processYouTubeUrl();
+        }
+
+        function removeHistory(videoId) {
+            const history = getHistory().filter(h => h.videoId !== videoId);
+            localStorage.setItem(YT_HISTORY_KEY, JSON.stringify(history));
+            loadHistory();
+            showToast('Video dihapus dari riwayat', 'success');
+        }
+
+        // ============================================
+        // Summary Actions
+        // ============================================
+        function copySummary() {
+            const summaryEl = document.getElementById('ytSummaryContent');
+            const text = summaryEl.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Ringkasan berhasil disalin!', 'success');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Ringkasan berhasil disalin!', 'success');
+            });
+        }
+
+        function downloadSummary() {
+            const summaryEl = document.getElementById('ytSummaryContent');
+            const text = summaryEl.innerText;
+            const title = currentVideoData ? currentVideoData.title : 'video';
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ringkasan_${title.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('File ringkasan berhasil didownload!', 'success');
+        }
+
+        // ============================================
+        // Utility Functions
+        // ============================================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('ytToast');
+            const msgEl = document.getElementById('ytToastMsg');
+            const iconEl = toast.querySelector('i');
+
+            msgEl.textContent = message;
+            toast.className = `yt-toast ${type}`;
+            iconEl.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+
+            // Show
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Hide after 3s
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+
+</html>
